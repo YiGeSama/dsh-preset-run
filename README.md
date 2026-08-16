@@ -26,6 +26,11 @@ dsh plugin --profile web add "git+https://github.com/<你的GitHub用户名>/dsh
 dsh plugin --profile web add "file:C:/path/to/dsh-preset-run"
 ```
 
+> Windows 注意：`file:` 本地路径若**包含空格**，`dsh plugin` 转发给 pnpm 时可能
+> 被拆断（实测 `E:/BaiduSyncdisk/SD Manager/dsh-preset-run` 会报
+> `ERR_PNPM_LINKED_PKG_DIR_NOT_FOUND`）。这种情况请改用 GitHub 安装，或把仓库
+> clone 到无空格路径，或使用 8.3 短路径。
+
 安装完成后**重启 web 进程**生效：`preset_run` 是 host-plane 工具，重启后所有
 会话都能调用。
 
