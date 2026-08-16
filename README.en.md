@@ -1,5 +1,7 @@
 # dsh-preset-run
 
+English | [中文](./README.md)
+
 **DeepSeek Harness plugin** that turns "web session + agent preset" into a programmable interface.
 
 Registers a host-plane tool **`preset_run(preset, task)`** — create a fresh, independent
@@ -72,15 +74,23 @@ Optional parameter `timeoutMs` caps a single child run (default `600000` ms).
 ## Supported presets
 
 `preset_run` uses whatever preset ids the deployment's `agentPresets` roster provides;
-it does not hardcode a list. Common presets:
+it does not hardcode a list.
+
+**Out of the box it supports the 4 default dsh presets** (shipped with dsh, no extra install):
+
+| Preset | Description |
+| --- | --- |
+| `standard` | Standard full tool catalog |
+| `code` | Code mode |
+| `minimal` | Minimal preset, good for simple Q&A |
+| `cordis` | Cordis authoring/debug preset |
+
+**The other 2 routing presets come from a third-party plugin** ([yjh051108/dsh-router-standard](https://github.com/yjh051108/dsh-router-standard) — not part of this plugin; install it separately for them to appear in the roster):
 
 | Preset | Description |
 | --- | --- |
 | `router-spec` | First turn exposes only core tools (read/edit/glob/grep + shell); the full catalog opens after the first tool call |
 | `router-standard` | Standard task-aware routing preset |
-| `standard` | Standard full tool catalog |
-| `minimal` | Minimal preset, good for simple Q&A |
-| `cordis` | Cordis authoring/debug preset |
 
 The exact roster depends on the deployment (`agentPreset.list`).
 
@@ -142,6 +152,12 @@ Expected highlights:
   (read/edit/glob/grep + shell); the full catalog opens after the first tool call. If
   your task text asks for a post-escalation tool such as `dev_router_status`, guide the
   child to run one shell command first (e.g. `pwd`).
+
+## Credits
+
+- **Idea & requirements**: YiGeSama (repository owner)
+- **Implementation**: built collaboratively by two AI agents — the DeepSeek Harness
+  agent (core implementation) and the Hermes agent (coordination, review, engineering).
 
 ## License
 

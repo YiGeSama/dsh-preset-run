@@ -1,5 +1,7 @@
 # dsh-preset-run
 
+[English](./README.en.md) | 中文
+
 **DeepSeek Harness 插件**：把「web 会话 + Agent 预设」变成可编程接口。
 
 注册一个 host-plane 工具 **`preset_run(preset, task)`** —— 用指定的 agent 预设
@@ -68,15 +70,23 @@ preset_run("standard", "把 README.md 里的 TODO 列表整理成表格")
 
 ## 支持的预设
 
-`preset_run` 使用 `agentPresets` roster 中的预设 id，不硬编码预设列表。常见预设：
+`preset_run` 使用 `agentPresets` roster 中的预设 id，不硬编码预设列表。
+
+**本插件自身支持 dsh 官方默认的 4 个预设**（随 dsh 自带，无需额外安装）：
+
+| 预设 | 说明 |
+| --- | --- |
+| `standard` | 标准完整工具目录 |
+| `code` | 代码模式 |
+| `minimal` | 极简预设，适合简单问答 |
+| `cordis` | Cordis 调试/开发相关预设 |
+
+**另外 2 个路由预设来自第三方插件**（[yjh051108/dsh-router-standard](https://github.com/yjh051108/dsh-router-standard)，不属于本插件，需单独安装后才会出现在 roster 中）：
 
 | 预设 | 说明 |
 | --- | --- |
 | `router-spec` | 首轮只暴露核心工具（read/edit/glob/grep + shell），首次工具调用后开放完整目录 |
 | `router-standard` | 标准路由预设 |
-| `standard` | 标准完整工具目录 |
-| `minimal` | 极简预设，适合简单问答 |
-| `cordis` | Cordis 调试/开发相关预设 |
 
 实际可用的预设以部署的 roster 为准（`agentPreset.list` 可查看）。
 
@@ -136,6 +146,11 @@ node verify-preset-run.mjs http://127.0.0.1:3083
 - router-spec 预设的设计是首轮只暴露核心工具（read/edit/glob/grep + shell），
   首次工具调用后才开放完整目录 —— 让子会话调用 `dev_router_status` 时，任务文本
   应引导它先执行一次 shell 命令（如 pwd）再调。
+
+## 致谢
+
+- **想法与需求**：YiGeSama（本仓库所有者）
+- **实现**：由两个 AI 助手协作完成——DeepSeek Harness agent 负责核心实现，Hermes agent 负责统筹、审查与工程化。
 
 ## 许可证
 
