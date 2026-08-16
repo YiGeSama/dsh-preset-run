@@ -1,32 +1,36 @@
 # dsh-preset-run
 
-dsh 插件：把「web 会话 + Agent 预设」变成可编程接口。
+**DeepSeek Harness 插件**：把「web 会话 + Agent 预设」变成可编程接口。
 
 注册一个 host-plane 工具 **`preset_run(preset, task)`** —— 用指定的 agent 预设
 （如 `router-spec` / `router-standard` / `standard` / `minimal` / `cordis`）创建
 一个全新的独立会话，执行 `task`，返回最终回答文本。等价于无头模拟 web UI 的
 「新建会话 → 选预设 → 发消息」流程。
 
+## 环境要求
+
+- 已安装 **DeepSeek Harness `>= 0.1.0-rc.6`**（`dsh` CLI，web 或 headless profile）
+- **Node.js `>= 18`**（建议 20+——插件与验证脚本用到较新的 Node 特性）
+- 已配置可用的模型服务（`settings.yaml` 的 `agent-default-model`）
+- 目标预设已存在于部署的 roster 中（如 `router-spec`、`minimal`）
+
+这是一个 **dsh 插件，不是独立 npm 包**：必须通过 `dsh plugin add` 装进 dsh
+profile，仓库不打包 dsh 运行时。
+
 ## 安装
 
-推荐从 GitHub 安装（仓库发布后）：
-
 ```bash
-# 方式一：GitHub 仓库
-dsh plugin --profile web add "github:<你的GitHub用户名>/dsh-preset-run"
+# 方式一：从 GitHub 安装（推荐）
+dsh plugin --profile web add "github:YiGeSama/dsh-preset-run"
 
-# 方式二：git+https 地址（把 <你的GitHub用户名> 替换成实际用户名）
-dsh plugin --profile web add "git+https://github.com/<你的GitHub用户名>/dsh-preset-run.git"
-```
+# 方式二：git+https 地址
+dsh plugin --profile web add "git+https://github.com/YiGeSama/dsh-preset-run.git"
 
-也可以从本地 clone/源码目录安装（无需 junction、无需手工 node_modules）：
-
-```bash
-# file: 使用绝对路径；pnpm 会把插件安装进 profile
+# 方式三：本地 clone / 源码目录
 dsh plugin --profile web add "file:C:/path/to/dsh-preset-run"
 ```
 
-> Windows 注意：`file:` 本地路径若**包含空格**，`dsh plugin` 转发给 pnpm 时可能
+> **Windows 注意**：`file:` 本地路径若**包含空格**，`dsh plugin` 转发给 pnpm 时可能
 > 被拆断（实测 `E:/BaiduSyncdisk/SD Manager/dsh-preset-run` 会报
 > `ERR_PNPM_LINKED_PKG_DIR_NOT_FOUND`）。这种情况请改用 GitHub 安装，或把仓库
 > clone 到无空格路径，或使用 8.3 短路径。
@@ -43,11 +47,11 @@ dsh plugin --profile web add "file:C:/path/to/dsh-preset-run"
 本插件运行时 import `@deepseek-ai/dsh-tools`、`dsh-agent`、`dsh-llm`、
 `dsh-session`。它们**只作为 `peerDependencies` 声明，不放进 `dependencies`**：
 
-- 这些包由 dsh harness 的共享安装提供（`~/.dsh/profiles/node_modules`）；
+- 这些包由承载该 profile 的 dsh harness 安装提供；
 - 一旦声明为 `dependencies`，`pnpm add` 会把这些包提升进
   `profiles/web/node_modules/@deepseek-ai/`，导致 `tools` 服务实例与
   `dsh-agent-loop` 的 `TOOL_RUNTIME_SCHEDULER` 符号来自两个模块实例，
-  任何工具调度都会崩溃（`Cannot read properties of undefined (reading 'prepare')`）。
+  任何工具调度都会崩溃（`Cannot read properties of undefined (reading 'prepare')`）；
 - 因此仓库不包含 `node_modules`，也没有任何本机绝对路径/junction。
 
 ## 用法
@@ -84,24 +88,26 @@ preset_run("standard", "把 README.md 里的 TODO 列表整理成表格")
   实现（`dsh-host-apiproxy` 的 `composeAgent`/`ensureSession`）完全一致，不是
   loader `--patch` 硬塞。
 - **模型路由**：读取 `agentDefaultModel.currentSelection()`（即 settings.yaml 的
-  `agent-default-model`：tokenrythm / deepseek-v4-flash-0731 / max），经
-  `installModelSelection` 挂到子 agent，provider/model/effort 一起生效。
+  `agent-default-model`），经 `installModelSelection` 挂到子 agent，
+  provider/model/effort 一起生效。
 - **任务执行**：`agent.followup(createUserMessage(task))` 唤醒驱动，
   `agent.whenIdle()` 等待运行结束，然后从会话事件日志汇总最后一段 assistant 文本
-  与 `turn/end` 的 reason；非 completed 的结局按失败返回（附带已有部分文本）。
+  与 `turn/end` 的 reason。**没有正常结束标记（turn/end）的运行一律按失败返回**
+  （严格模式，即使已产生部分文本），非 completed 的结局同样按失败处理（附带已有
+  部分文本）。
 - **清理**：返回结果后 `dispose()` 子 agent，会话从注册表移除，不残留 UI 会话。
-  调用方（exec.signal）中止或超时都会先 `agent.cancel()` 再退出。
+  调用方（exec.signal）中止或超时都会先 `agent.cancel()` 再退出。清理出错只记录
+  日志，**绝不覆盖子会话自身的结果/报错**。
 
-## 注意
+## 安全注意
 
+- `preset_run` 让**任何能调用它的会话**都能开子会话跑任务，能力很强。多用户或
+  不可信环境部署时，务必确认只有受信调用方能触达它。
 - 子会话沿用部署的默认权限预设（新会话默认的 sandbox + approval）；在默认
   workspace-write + ask 的部署里，子 agent 若需要提权会进入审批流程而无人应答，
   可能阻塞到超时。需要无人工介入时请把默认权限预设配成 danger-full-access
   （`settings.yaml` 或环境 `DSH_PERMISSION_MODE=danger-full-access`）。
 - 子会话是一次性的：返回文本后即销毁，不留历史。
-- router-spec 预设的设计是首轮只暴露核心工具（read/edit/glob/grep + shell），
-  首次工具调用后才开放完整目录 —— 让子会话调用 `dev_router_status` 时，任务文本
-  应引导它先执行一次 shell 命令（如 pwd）再调。
 
 ## 验证
 
@@ -124,3 +130,13 @@ node verify-preset-run.mjs http://127.0.0.1:3083
 - `minimal` 会话回答 `1+1=2`；
 - 一个 standard 父会话两次调用 **preset_run 工具本身**（router-spec 子会话
   输出 dev_router_status 结果；minimal 子会话回答 1+1=2），全部中继成功。
+
+## 注意事项
+
+- router-spec 预设的设计是首轮只暴露核心工具（read/edit/glob/grep + shell），
+  首次工具调用后才开放完整目录 —— 让子会话调用 `dev_router_status` 时，任务文本
+  应引导它先执行一次 shell 命令（如 pwd）再调。
+
+## 许可证
+
+MIT —— 见 [LICENSE](LICENSE)。
