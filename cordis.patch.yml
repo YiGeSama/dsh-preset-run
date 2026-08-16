@@ -1,0 +1,7 @@
+# preset-run — bundle patch: one plugin row loading the host half.
+# The row registers the `preset_run` tool on the host-plane tools registry, so
+# every session (whatever preset it runs) can call it. The row id stays
+# `preset-run`; the module graph id (package name) is `preset-run`.
+- insert:
+    - id: preset-run
+      name: preset-run

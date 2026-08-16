@@ -1,0 +1,56 @@
+{
+  "name": "preset-run",
+  "version": "0.1.0",
+  "description": "preset_run tool for DeepSeek Harness: create a fresh agent session composed from any agent preset (e.g. router-spec / router-standard / standard / minimal / cordis) and run a task headlessly, returning the final answer text. Programmatic equivalent of the Web UI's New Session -> pick preset -> send message flow.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "verify-preset-run.mjs"
+  ],
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "agent-preset",
+    "preset-run",
+    "headless"
+  ],
+  "license": "MIT",
+  "author": "preset-run contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/<your-github-username>/dsh-preset-run.git"
+  },
+  "bugs": {
+    "url": "https://github.com/<your-github-username>/dsh-preset-run/issues"
+  },
+  "homepage": "https://github.com/<your-github-username>/dsh-preset-run#readme",
+  "engines": {
+    "dsh": ">=0.1.0-rc.6"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-agent": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-llm": ">=0.0.1-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-session": ">=0.0.1-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-tools": ">=0.0.1-rc.1 <0.2.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "verify": "node verify-preset-run.mjs"
+  }
+}
