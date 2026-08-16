@@ -29,12 +29,12 @@
   "author": "preset-run contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<your-github-username>/dsh-preset-run.git"
+    "url": "git+https://github.com/your-github-username/dsh-preset-run.git"
   },
   "bugs": {
-    "url": "https://github.com/<your-github-username>/dsh-preset-run/issues"
+    "url": "https://github.com/your-github-username/dsh-preset-run/issues"
   },
-  "homepage": "https://github.com/<your-github-username>/dsh-preset-run#readme",
+  "homepage": "https://github.com/your-github-username/dsh-preset-run#readme",
   "engines": {
     "dsh": ">=0.1.0-rc.6"
   },
