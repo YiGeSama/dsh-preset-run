@@ -156,8 +156,9 @@ Expected highlights:
 ## Credits
 
 - **Idea & requirements**: YiGeSama (repository owner)
-- **Implementation**: built collaboratively by two AI agents — the DeepSeek Harness
-  agent (core implementation) and the Hermes agent (coordination, review, engineering).
+- **Implementation**: built collaboratively by two AI agents — the assistant inside
+  dsh (DeepSeek Harness) handled core implementation; the Hermes assistant handled
+  coordination, review and engineering.
 
 ## License
 

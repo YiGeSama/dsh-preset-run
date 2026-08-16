@@ -150,7 +150,7 @@ node verify-preset-run.mjs http://127.0.0.1:3083
 ## 致谢
 
 - **想法与需求**：YiGeSama（本仓库所有者）
-- **实现**：由两个 AI 助手协作完成——DeepSeek Harness agent 负责核心实现，Hermes agent 负责统筹、审查与工程化。
+- **实现**：由两个 AI 助手协作完成——dsh（DeepSeek Harness）侧的助手负责核心实现，Hermes 侧的助手负责统筹、审查与工程化。
 
 ## 许可证
 
